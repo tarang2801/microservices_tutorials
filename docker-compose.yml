@@ -1,0 +1,241 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Databases
+
+  postgres-microservice:
+    image: postgres:15-alpine
+    container_name: postgres-microservices
+    environment:
+      POSTGRES_DB: microservice
+      POSTGRES_USER: microservice_user
+      POSTGRES_PASSWORD: microservice_password
+    ports:
+      - "5437:5432"
+    # volumes:
+      # - postgres-member-data:/var/lib/postgresql/data
+      # - ./infrastructure/postgres/member-init.sql:/docker-entrypoint-initdb.d/member-init.sql
+    networks:
+      - microservice-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U microservice_user -d microservice"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # postgres-member:
+  #   image: postgres:15-alpine
+  #   container_name: caresync-postgres-member
+  #   environment:
+  #     POSTGRES_DB: member_db
+  #     POSTGRES_USER: caresync_user
+  #     POSTGRES_PASSWORD: caresync_password
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres-member-data:/var/lib/postgresql/data
+  #     - ./infrastructure/postgres/member-init.sql:/docker-entrypoint-initdb.d/member-init.sql
+  #   networks:
+  #     - caresync-network
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U caresync_user -d member_db"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  # postgres-claim-write:
+  #   image: postgres:15-alpine
+  #   container_name: caresync-postgres-claim-write
+  #   environment:
+  #     POSTGRES_DB: claim_write_db
+  #     POSTGRES_USER: caresync_user
+  #     POSTGRES_PASSWORD: caresync_password
+  #   ports:
+  #     - "5433:5432"
+  #   volumes:
+  #     - postgres-claim-write-data:/var/lib/postgresql/data
+  #     - ./infrastructure/postgres/claim-write-init.sql:/docker-entrypoint-initdb.d/claim-write-init.sql
+  #   networks:
+  #     - caresync-network
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U caresync_user -d claim_write_db"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  # postgres-claim-read:
+  #   image: postgres:15-alpine
+  #   container_name: caresync-postgres-claim-read
+  #   environment:
+  #     POSTGRES_DB: claim_read_db
+  #     POSTGRES_USER: caresync_user
+  #     POSTGRES_PASSWORD: caresync_password
+  #   ports:
+  #     - "5434:5432"
+  #   volumes:
+  #     - postgres-claim-read-data:/var/lib/postgresql/data
+  #     - ./infrastructure/postgres/claim-read-init.sql:/docker-entrypoint-initdb.d/claim-read-init.sql
+  #   networks:
+  #     - caresync-network
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U caresync_user -d claim_read_db"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  # postgres-payment:
+  #   image: postgres:15-alpine
+  #   container_name: caresync-postgres-payment
+  #   environment:
+  #     POSTGRES_DB: payment_db
+  #     POSTGRES_USER: caresync_user
+  #     POSTGRES_PASSWORD: caresync_password
+  #   ports:
+  #     - "5435:5432"
+  #   volumes:
+  #     - postgres-payment-data:/var/lib/postgresql/data
+  #     - ./infrastructure/postgres/payment-init.sql:/docker-entrypoint-initdb.d/payment-init.sql
+  #   networks:
+  #     - caresync-network
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U caresync_user -d payment_db"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  # postgres-document:
+  #   image: postgres:15-alpine
+  #   container_name: caresync-postgres-document
+  #   environment:
+  #     POSTGRES_DB: document_db
+  #     POSTGRES_USER: caresync_user
+  #     POSTGRES_PASSWORD: caresync_password
+  #   ports:
+  #     - "5436:5432"
+  #   volumes:
+  #     - postgres-document-data:/var/lib/postgresql/data
+  #     - ./infrastructure/postgres/document-init.sql:/docker-entrypoint-initdb.d/document-init.sql
+  #   networks:
+  #     - caresync-network
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U caresync_user -d document_db"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  # # MongoDB for Audit Logging
+  # mongodb:
+  #   image: mongo:6.0
+  #   container_name: caresync-mongodb
+  #   environment:
+  #     MONGO_INITDB_DATABASE: audit_db
+  #     MONGO_INITDB_ROOT_USERNAME: caresync_user
+  #     MONGO_INITDB_ROOT_PASSWORD: caresync_password
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongodb-data:/data/db
+  #     - ./infrastructure/mongodb/audit-init.js:/docker-entrypoint-initdb.d/audit-init.js
+  #   networks:
+  #     - caresync-network
+  #   healthcheck:
+  #     test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  # # Apache Zookeeper
+  # zookeeper:
+  #   image: confluentinc/cp-zookeeper:7.4.0
+  #   container_name: caresync-zookeeper
+  #   environment:
+  #     ZOOKEEPER_CLIENT_PORT: 2181
+  #     ZOOKEEPER_TICK_TIME: 2000
+  #   ports:
+  #     - "2181:2181"
+  #   networks:
+  #     - caresync-network
+  #   healthcheck:
+  #     test: ["CMD", "nc", "-z", "localhost", "2181"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  # # Apache Kafka
+  # kafka:
+  #   image: confluentinc/cp-kafka:7.4.0
+  #   container_name: caresync-kafka
+  #   depends_on:
+  #     zookeeper:
+  #       condition: service_healthy
+  #   environment:
+  #     KAFKA_BROKER_ID: 1
+  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+  #     KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  #     KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+  #   ports:
+  #     - "9092:9092"
+  #     - "29092:29092"
+  #   volumes:
+  #     - kafka-data:/var/lib/kafka/data
+  #     - ./infrastructure/kafka/create-topics.sh:/create-topics.sh
+  #   networks:
+  #     - caresync-network
+  #   healthcheck:
+  #     test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   command: >
+  #     bash -c "
+  #     echo 'Waiting for Zookeeper...' &&
+  #     sleep 10 &&
+  #     /etc/confluent/docker/run &
+  #     echo 'Waiting for Kafka to start...' &&
+  #     sleep 20 &&
+  #     /create-topics.sh &&
+  #     wait
+  #     "
+
+  # # LocalStack for AWS S3 Simulation
+  # localstack:
+  #   image: localstack/localstack:2.3.0
+  #   container_name: caresync-localstack
+  #   environment:
+  #     SERVICES: s3
+  #     DEBUG: 1
+  #     DATA_DIR: /tmp/localstack/data
+  #     AWS_DEFAULT_REGION: us-east-1
+  #     AWS_ACCESS_KEY_ID: test
+  #     AWS_SECRET_ACCESS_KEY: test
+  #   ports:
+  #     - "4566:4566"
+  #     - "4510-4559:4510-4559"
+  #   volumes:
+  #     - localstack-data:/tmp/localstack/data
+  #     - ./infrastructure/localstack/init-s3.sh:/etc/localstack/init/ready.d/init-s3.sh
+  #   networks:
+  #     - caresync-network
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:4566/health"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+networks:
+  microservice-network:
+    driver: bridge
+    name: microservice-network
+
+# volumes:
+#   postgres-member-data:
+#   postgres-claim-write-data:
+#   postgres-claim-read-data:
+#   postgres-payment-data:
+#   postgres-document-data:
+#   mongodb-data:
+#   kafka-data:
+#   localstack-data:

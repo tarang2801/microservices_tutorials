@@ -1,0 +1,29 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /hotelservice
+
+
+spring:
+  application:
+    name: hotelservice
+  config:
+    import: "optional:configserver:http://localhost:9999"
+
+#----db config moved to config server---
+#  datasource:
+#    url: jdbc:postgresql://localhost:5437/microservice
+#    username: microservice_user
+#    password: microservice_password
+#    driver-class-name: org.postgresql.Driver
+
+#  jpa:
+##    hibernate:
+##      ddl-auto: update
+#    show-sql: true
+
+
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8762/eureka

@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: ratingservice
+#  mongodb:
+#    uri: mongodb://localhost:27017/microservice // move to config server
+  config:
+    import: "optional:configserver:http://localhost:9999"
+
+server:
+  port: 8083
+  servlet:
+    context-path: /ratingservice
+
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8762/eureka

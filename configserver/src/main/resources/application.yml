@@ -1,0 +1,20 @@
+server:
+  port: 9999
+
+spring:
+  application:
+    name: CONFIG-SERVER
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/tarang2801/microserviceconfigserver # URL to your Git repository
+          default-label: main # The default branch to pull configs from (e.g., main or master)
+          search-paths: '{application},common' # Optional: Looks for folders named after your apps
+          clone-on-start: false # Optional: Forces server to pull from Git immediately on startup
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8762/eureka
